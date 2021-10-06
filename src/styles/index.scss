@@ -1,0 +1,16 @@
+$body-color: slateblue;
+
+body,
+html {
+  color: $body-color;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  font-family: sans-serif;
+  height: 100%;
+  width: 100%;
+}
+
+canvas {
+  margin: auto;
+}
