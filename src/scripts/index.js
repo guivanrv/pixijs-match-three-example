@@ -1,35 +1,39 @@
 import '../styles/index.scss';
 import * as PIXI from 'pixi.js';
 
-// The application will create a renderer using WebGL, if possible,
-// with a fallback to a canvas render. It will also setup the ticker
-// and the root stage PIXI.Container.
 const app = new PIXI.Application();
- 
-// The application will create a canvas element for you that you
-// can then insert into the DOM.
 document.body.appendChild(app.view);
 const loader = PIXI.Loader.shared;
-// load the texture we need
-loader.add('bear', 'public/images/bear.png').load((loader, resources) => {
- 
-    // This creates a texture from a 'bear.png' image.
-    const bear = new PIXI.Sprite(resources.bear.texture);
- 
-    // Setup the position of the bear
-    bear.x = app.renderer.width / 2;
-    bear.y = app.renderer.height / 2;
- 
-    // Rotate around the center
-    bear.anchor.x = 0.5;
-    bear.anchor.y = 0.5;
- 
-    // Add the bear to the scene we are building.
-    app.stage.addChild(bear);
- 
+
+const animals = ['bear','buffalo','chick','chicken',
+    'cow','crocodile','dog','duck','elephant','frog','giraffe',
+    'goat','gorilla','hippo','horse','monkey','moose',
+    'narwhal','owl','panda','parrot','penguin','pig',
+    'rabbit','rhino','sloth','snake','walrus','whale','zebra'
+], TILES_OX = 6, TILES_OY = 4, SPRITE_WIDTH = 138, SPRITE_HEIGHT = 138, sprites = [];
+
+loader.add(animals.map(str => ({name: str,url: `public/images/${str}.png`}))).load(
+    (loader, resources) => {
+    for (let x = 0; x < TILES_OX; x++) {
+        for (let y = 0; y < TILES_OY; y++) {
+            const randomAnimal = animals[Math.trunc(Math.random() * animals.length)];
+            const sprite = new PIXI.Sprite(resources[randomAnimal].texture);
+            sprite.anchor.x = 0.5;
+            sprite.anchor.y = 0.5;
+            sprite.x = x * SPRITE_WIDTH + SPRITE_WIDTH/2;
+            sprite.y = y * SPRITE_HEIGHT + SPRITE_HEIGHT/2;
+            app.stage.addChild(sprite);
+            sprites.push(sprite);
+        }    
+    }
+});
+
+
     // Listen for frame updates
     app.ticker.add(() => {
-         // each frame we spin the bear around a bit
-        bear.rotation += 0.01;
+        sprites.forEach((sprite, index) => {
+            const scale = 1 + 0.1 * Math.sin(Date.now() / (400 + index * 10));
+            sprite.scale.x = scale;
+            sprite.scale.y = scale;
+        })
     });
-});
