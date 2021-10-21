@@ -2,7 +2,12 @@ import '../styles/index.scss';
 import * as PIXI from 'pixi.js';
 import PatternMatcher from './patterns';
 
-const app = new PIXI.Application();
+const app = new PIXI.Application(
+    {
+        width: 870,
+        height: 870
+    }
+);
 const patternMatcher = new PatternMatcher();
 document.body.appendChild(app.view);
 const loader = PIXI.Loader.shared;
@@ -12,7 +17,7 @@ const animals = ['bear', 'buffalo', 'chick', 'chicken',
     'goat', 'gorilla', 'hippo', 'horse', 'monkey', 'moose',
     'narwhal', 'owl', 'panda', 'parrot', 'penguin', 'pig',
     'rabbit', 'rhino', 'sloth', 'snake', 'walrus', 'whale', 'zebra'
-], TILES_OX = 6, TILES_OY = 4, SPRITE_WIDTH = 138, SPRITE_HEIGHT = 120, sprites = [];
+], TILES_OX = 6, TILES_OY = 6, SPRITE_WIDTH = 140, SPRITE_HEIGHT = 140, PADDING = 15, sprites = [];
 
 let selected = undefined, resources;
 
@@ -90,8 +95,8 @@ function createSprite(randomAnimal, x, y) {
     sprite.name = randomAnimal;
     sprite.anchor.x = 0.5;
     sprite.anchor.y = 0.5;
-    sprite.x = x * SPRITE_WIDTH + SPRITE_WIDTH / 2;
-    sprite.y = y * SPRITE_HEIGHT + SPRITE_HEIGHT / 2;
+    sprite.x = x * SPRITE_WIDTH + SPRITE_WIDTH / 2 + PADDING;
+    sprite.y = y * SPRITE_HEIGHT + SPRITE_HEIGHT / 2 + PADDING;
     sprite.interactive = true;
     sprite.buttonMode = true;
     // store array position
