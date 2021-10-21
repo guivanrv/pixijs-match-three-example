@@ -15,3 +15,29 @@ html {
 canvas {
   margin: auto;
 }
+
+#ui {
+  position: absolute;
+  width: 15vw;
+  padding: 2em;
+  background: rgba(33,33,33,.1);
+  height: 100vh;
+  color: white;
+
+  .score::before {
+    content: 'Total score:  ';
+  }
+
+  .log {
+    overflow-y: auto;
+    height: 60vh;
+    display: block;
+  }
+  .log-row {
+    img {
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+    }
+  }
+}

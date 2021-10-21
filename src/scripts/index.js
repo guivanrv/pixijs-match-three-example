@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js';
 import TWEEN from '@tweenjs/tween.js';
 import PatternMatcher from './patterns';
 import audio from './audio';
+import ui from './ui';
 import { popIn, shrink, bounce } from './tween'
 const app = new PIXI.Application(
     {
@@ -68,19 +69,21 @@ function onSpriteClick(sprite) {
 }
 
 function runPatternCheck() {
-    const strGroups = sprites.map(col => col.map( element => element.name ));
+    const strGroups = sprites.map(col => col.map(element => element.name));
     const groups = patternMatcher.matchAllGroups(strGroups);
 
     if (groups.length) {
         audio.fx.nextLine();
-        groups.forEach(({points}) => {
-            points.map(({x,y})=>sprites[x][y]).forEach(sprite => {
-                const {x,y } = sprite.customData;
+        groups.forEach((group) => {
+            ui.log(group);
+            group.points.map(({ x, y }) => sprites[x][y]).forEach(sprite => {
+                const { x, y } = sprite.customData;
                 const newSprite = createSprite(getRandomAnimalName(), x, y);
                 sprites[x][y] = newSprite;
-                shrink(sprite).then(()=>{
+                shrink(sprite).then(() => {
                     app.stage.removeChild(sprite);
                     app.stage.addChild(newSprite);
+                    ui.score += 100;
                     runPatternCheck();
                 })
             })
@@ -107,16 +110,7 @@ function createSprite(randomAnimal, x, y) {
 
 function update() {
     TWEEN.update(performance.now())
-    // sprites.forEach((row, x) => {
-    //     row.forEach((sprite, y) => {
-    //         sprite.scale.set(1, 1);
-    //     });
-    // });
-    // if (selected) {
-    //     const scale = 1 + 0.1 * Math.sin(Date.now() / 100);
-    //     selected.scale.x = scale;
-    //     selected.scale.y = scale;
-    // }
+    ui.update();
 }
 
 // executable beeps-and-boops
