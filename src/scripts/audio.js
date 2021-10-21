@@ -24,7 +24,8 @@ const menuMusic = new Howl({
     autoplay: true,
     loop: true,
     volume: 0.5,
-})
+});
+
 function playRandomSound(array) {
     array[Math.trunc(Math.random() * array.length)].play();
 }

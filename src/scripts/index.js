@@ -1,8 +1,9 @@
 import '../styles/index.scss';
 import * as PIXI from 'pixi.js';
+import TWEEN from '@tweenjs/tween.js';
 import PatternMatcher from './patterns';
 import audio from './audio';
-
+import { popIn, shrink, bounce } from './tween'
 const app = new PIXI.Application(
     {
         width: 870,
@@ -20,18 +21,7 @@ const animals = ['bear', 'buffalo', 'chick', 'chicken',
     'rabbit', 'rhino', 'sloth', 'snake', 'walrus', 'whale', 'zebra'
 ], TILES_OX = 6, TILES_OY = 6, SPRITE_WIDTH = 140, SPRITE_HEIGHT = 140, PADDING = 15, sprites = [];
 
-let selected = undefined, resources;
-
-function printSpriteNames() {
-    for (let y = 0; y < TILES_OY; y++) {
-        let row = '';
-        for (let x = 0; x < TILES_OX; x++) {
-            row += `${sprites[x][y].name} `;
-        }
-        console.log(row);
-    }
-    console.log('------');
-}
+let selected = undefined, selectedBounce = undefined, resources;
 
 function getRandomAnimalName() {
     return animals[Math.trunc(Math.random() * 10)];
@@ -52,6 +42,8 @@ function onSpriteClick(sprite) {
     audio.fx.click();
     if (!selected) {
         selected = sprite;
+        selectedBounce?.stop();
+        selectedBounce = bounce(selected);
     } else {
         if (selected === sprite) {
             // can't swap element with itself
@@ -69,6 +61,7 @@ function onSpriteClick(sprite) {
         sprite.customData = positionA;
         sprites[positionA.x][positionA.y] = sprite;
         sprites[positionB.x][positionB.y] = selected;
+        selectedBounce?.stop();
         selected = undefined;
         runPatternCheck();
     }
@@ -82,14 +75,16 @@ function runPatternCheck() {
         audio.fx.nextLine();
         groups.forEach(({points}) => {
             points.map(({x,y})=>sprites[x][y]).forEach(sprite => {
-                app.stage.removeChild(sprite);
                 const {x,y } = sprite.customData;
                 const newSprite = createSprite(getRandomAnimalName(), x, y);
-                app.stage.addChild(newSprite);
                 sprites[x][y] = newSprite;
+                shrink(sprite).then(()=>{
+                    app.stage.removeChild(sprite);
+                    app.stage.addChild(newSprite);
+                    runPatternCheck();
+                })
             })
         });
-        runPatternCheck();
     }
 }
 
@@ -106,20 +101,22 @@ function createSprite(randomAnimal, x, y) {
     // store array position
     sprite.customData = { x, y };
     sprite.on('pointerdown', ({ target }) => onSpriteClick(target));
+    popIn(sprite);
     return sprite;
 }
 
 function update() {
-    sprites.forEach((row, x) => {
-        row.forEach((sprite, y) => {
-            sprite.scale.set(1, 1);
-        });
-    });
-    if (selected) {
-        const scale = 1 + 0.1 * Math.sin(Date.now() / 100);
-        selected.scale.x = scale;
-        selected.scale.y = scale;
-    }
+    TWEEN.update(performance.now())
+    // sprites.forEach((row, x) => {
+    //     row.forEach((sprite, y) => {
+    //         sprite.scale.set(1, 1);
+    //     });
+    // });
+    // if (selected) {
+    //     const scale = 1 + 0.1 * Math.sin(Date.now() / 100);
+    //     selected.scale.x = scale;
+    //     selected.scale.y = scale;
+    // }
 }
 
 // executable beeps-and-boops
