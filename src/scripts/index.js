@@ -15,6 +15,17 @@ const animals = ['bear', 'buffalo', 'chick', 'chicken',
 
 let selected = undefined;
 
+function printSpriteNames() {
+    for (let y = 0; y < TILES_OY; y++) {
+        let row = '';
+        for (let x = 0; x < TILES_OX; x++) {
+            row+=`${sprites[x][y].name} `;
+        }
+        console.log(row);
+    }
+    console.log('------');
+}
+
 loader.add(animals.map(str => ({ name: str, url: `public/images/${str}.png` }))).load(
     (loader, resources) => {
         for (let x = 0; x < TILES_OX; x++) {

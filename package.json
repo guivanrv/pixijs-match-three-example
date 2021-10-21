@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A light foundation for your next frontend project based on webpack.",
   "scripts": {
+    "test": "jest",
     "lint": "npm run lint:styles; npm run lint:scripts",
     "lint:styles": "stylelint src",
     "lint:scripts": "eslint src",
@@ -61,6 +62,7 @@
     "@babel/polyfill": "^7.12.1",
     "core-js": "^3.16.1",
     "d3": "^7.0.0",
+    "jest": "^27.2.4",
     "pixi.js": "^6.1.3"
   }
 }
