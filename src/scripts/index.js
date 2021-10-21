@@ -1,6 +1,7 @@
 import '../styles/index.scss';
 import * as PIXI from 'pixi.js';
 import PatternMatcher from './patterns';
+import audio from './audio';
 
 const app = new PIXI.Application(
     {
@@ -48,6 +49,7 @@ function onTexturesLoaded() {
 }
 
 function onSpriteClick(sprite) {
+    audio.fx.click();
     if (!selected) {
         selected = sprite;
     } else {
@@ -76,7 +78,8 @@ function runPatternCheck() {
     const strGroups = sprites.map(col => col.map( element => element.name ));
     const groups = patternMatcher.matchAllGroups(strGroups);
 
-    if (groups.length){
+    if (groups.length) {
+        audio.fx.nextLine();
         groups.forEach(({points}) => {
             points.map(({x,y})=>sprites[x][y]).forEach(sprite => {
                 app.stage.removeChild(sprite);
@@ -85,7 +88,8 @@ function runPatternCheck() {
                 app.stage.addChild(newSprite);
                 sprites[x][y] = newSprite;
             })
-        })
+        });
+        runPatternCheck();
     }
 }
 
