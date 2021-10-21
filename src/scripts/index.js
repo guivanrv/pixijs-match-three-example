@@ -14,7 +14,7 @@ const animals = ['bear', 'buffalo', 'chick', 'chicken',
     'rabbit', 'rhino', 'sloth', 'snake', 'walrus', 'whale', 'zebra'
 ], TILES_OX = 6, TILES_OY = 4, SPRITE_WIDTH = 138, SPRITE_HEIGHT = 120, sprites = [];
 
-let selected = undefined;
+let selected = undefined, resources;
 
 function printSpriteNames() {
     for (let y = 0; y < TILES_OY; y++) {
@@ -27,12 +27,15 @@ function printSpriteNames() {
     console.log('------');
 }
 
-function onTexturesLoaded(resources) {
+function getRandomAnimalName() {
+    return animals[Math.trunc(Math.random() * 10)];
+}
+
+function onTexturesLoaded() {
     for (let x = 0; x < TILES_OX; x++) {
         sprites[x] = [];
         for (let y = 0; y < TILES_OY; y++) {
-            const randomAnimal = animals[Math.trunc(Math.random() * animals.length)];
-            const sprite = createSprite(randomAnimal, resources[randomAnimal].texture, x, y);
+            const sprite = createSprite(getRandomAnimalName(), x, y);
             sprites[x][y] = sprite;
             app.stage.addChild(sprite);
         }
@@ -60,10 +63,29 @@ function onSpriteClick(sprite) {
         sprites[positionA.x][positionA.y] = sprite;
         sprites[positionB.x][positionB.y] = selected;
         selected = undefined;
+        runPatternCheck();
     }
 }
 
-function createSprite(randomAnimal, texture, x, y) {
+function runPatternCheck() {
+    const strGroups = sprites.map(col => col.map( element => element.name ));
+    const groups = patternMatcher.matchAllGroups(strGroups);
+
+    if (groups.length){
+        groups.forEach(({points}) => {
+            points.map(({x,y})=>sprites[x][y]).forEach(sprite => {
+                app.stage.removeChild(sprite);
+                const {x,y } = sprite.customData;
+                const newSprite = createSprite(getRandomAnimalName(), x, y);
+                app.stage.addChild(newSprite);
+                sprites[x][y] = newSprite;
+            })
+        })
+    }
+}
+
+function createSprite(randomAnimal, x, y) {
+    const texture = resources[randomAnimal].texture;
     const sprite = new PIXI.Sprite(texture);
     sprite.name = randomAnimal;
     sprite.anchor.x = 0.5;
@@ -95,7 +117,11 @@ function update() {
 const imageFilesToLoad = animals.map(str => ({ name: str, url: `public/images/${str}.png` }));
 
 loader.add(imageFilesToLoad).load(
-    (loader, resources) => onTexturesLoaded(resources)
+    (loader, res) => {
+        resources = res;
+        onTexturesLoaded();
+        runPatternCheck();
+    }
 );
 
 
