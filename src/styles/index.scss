@@ -41,3 +41,13 @@ canvas {
     }
   }
 }
+
+#rhs {
+  position: absolute;
+  right: 0;
+  width: 15vw;
+  padding: 2em;
+  background: rgba(33,33,33,.1);
+  height: 100vh;
+  color: white;
+}
